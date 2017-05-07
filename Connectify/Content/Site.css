@@ -1,13 +1,6 @@
-﻿body {
-    padding-top: 50px;
-    padding-bottom: 20px;
-}
+﻿
 
 /* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-}
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
@@ -20,6 +13,12 @@ textarea {
 .field-validation-error {
     color: #b94a48;
 }
+.form-horizontal{
+    padding-top:10px;
+    padding:10px;
+}
+
+
 
 .field-validation-valid {
     display: none;
@@ -39,4 +38,38 @@ input[type="checkbox"].input-validation-error {
 
 .validation-summary-valid {
     display: none;
+}
+li.livesearchli img{
+    width:40px;;
+    height:50px;
+
+}
+ul#livesearch{
+    background-color:#808080;
+    position:relative;
+   
+}
+ul#livesearch li{
+    padding:5px;
+    color:#f8f8f8;
+}
+ul#livesearch li a{
+  color:#f8f8f8;
+}
+ul#livesearch li.close{
+    color:#f8f8f8;
+  
+}
+img#img-user{
+   margin-top: 79px;
+      
+}
+div.NameMain{
+          margin-top:20px;
+        color: #fff;
+           text-rendering: optimizelegibility;
+           text-shadow: 0 0 3px rgba(0,0,0,.8);
+          font-weight:bold;
+          font-family:inherit;
+          font-size:medium;
 }

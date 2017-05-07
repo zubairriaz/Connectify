@@ -1,0 +1,89 @@
+﻿
+@{
+    ViewBag.Title = "View1";
+}
+
+   <div class="row">
+       
+       <div class="media-body"><img src="/Images/@ViewBag.Image2 " class="img-rounded img-thumbnail" width="240" height="240" id="img-user" /></div>
+       <div class="NameMain">@ViewBag.ViewFullName ( @ViewBag.USERNAME )</div>
+   </div>
+<div>
+    @if (ViewBag.userType == "guest")
+    {
+        <div class="friends">
+            @if(ViewBag.Friends == "pending"){
+                <div class="alert alert-warning arefriendsdiv" >
+                    <p>Pending Friends Request</p>
+                </div>
+            }
+            else if(ViewBag.Friends =="False"){
+            <div class="arefriendsdiv alert alert-info">
+                <a href="" class="addfriend">Add Friend</a>
+            </div> 
+            }
+            else
+            {
+                <div class="arefriendsdiv alert alert-success">
+                    <span class="glyphicon glyphicon-thumbs-up"></span>Friends
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+<script src="~/Scripts/jquery.signalR-2.0.0.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+   <script>
+   
+       $(document).ready(function () {
+           $("input#search").keyup(function () {
+               var search = $("input#search").val();
+               $("ul#livesearch").empty();
+               if (search == "" || search == "  ") return false;
+               var url = "Profile/LiveSearch";
+               $.post(url, {Username:search}, function (data) {
+                   if (data.length > 0) {
+                       $("ul#livesearch").append("<li class=close>x</li>");
+
+                   }
+                   for (var i = 0 ; i < data.length ; i++) {
+                       var obj = data[i];
+                       $("ul#livesearch").append("<li class=livesearchli><a href='/" +obj.UserName+ "' ><img src='Images/"+obj.Id+".jpg'/> "+''+ obj.FirstName+''+obj.LastName+"</a>  </li>");
+                       
+                   }
+
+               });
+
+           });
+
+           $("body").on("click", "ul#livesearch li.close", function () {
+               $("ul#livesearch").empty();
+               $("input#search").val("");
+
+           });
+
+           var hub = $.connection.echo;
+           hub.client.test = function (msg) {
+               console.log(msg);
+           }
+           $.connection.hub.start().done(function () {
+
+               hub.server.hello("This is signalr");
+           });
+
+           $("a.addfriend").click(function (e) {
+               e.preventDefault();
+               var friend = '@ViewBag.USERNAME';
+               var url = '/Profile/AddFriend';
+               $.post(url, { friend: friend }, function (data) {
+                   $('arefriendsdiv').removeClass('alert alert-info').addClass('alert alert-warning').html('<p>Pending Friend Request</p>');
+               }).done(function () {
+                   hub.server.notify(friend);
+               });
+           });
+
+       });
+    </script>
+}
