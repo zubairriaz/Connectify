@@ -73,3 +73,7 @@ div.NameMain{
           font-family:inherit;
           font-size:medium;
 }
+span.frnoti.red{
+    color:red;
+    cursor:pointer;
+}

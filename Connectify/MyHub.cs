@@ -5,6 +5,8 @@ using System.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System.Diagnostics;
+using Connectify.Models.Data;
+using System;
 
 namespace Connectify
 {
@@ -15,6 +17,44 @@ namespace Connectify
         {
             Trace.WriteLine(message);
             Clients.All.test("this is test");
+        }
+        public void notify(string friend)
+        {
+            Db db = new Db();
+            UsersDto user = db.Users.Where(x => x.UserName.Equals(friend)).FirstOrDefault();
+            int friendId = user.Id;
+            var friendCount = db.Friends.Count(x => x.User2 == friendId && x.Active==false);
+
+            var clients = Clients.Others;
+            clients.frnotify(friend, friendCount);
+
+        }
+        public void getFrCount(string message)
+        {
+            Db db = new Db();
+            UsersDto user = db.Users.Where(x => x.UserName.Equals(Context.User.Identity.Name)).FirstOrDefault();
+            int userId = user.Id;
+            var friendCount = db.Friends.Count(x => x.User2 == userId && x.Active == false);
+            Trace.WriteLine("" + "" + friendCount);
+            var clients = Clients.All;
+            clients.frcount(friendCount);
+           
+
+        }
+        public void getFCount(int friendId)
+        {  
+             Db db = new Db();
+             UsersDto user = db.Users.Where(x => x.UserName.Equals(Context.User.Identity.Name)).FirstOrDefault();
+             int userId = user.Id;
+              var FriendCount = db.Friends.Count(x => x.User1 == userId && x.Active == true || x.User2 == userId && x.Active == true);
+              UsersDto user2 = db.Users.Where(x => x.Id == friendId).FirstOrDefault();
+              string username = user2.UserName;
+              var FriendCount2 = db.Friends.Count(x => x.User1 == friendId && x.Active == true || x.User2 == friendId && x.Active == true);
+
+              Clients.All.fscount(Context.User.Identity.Name, username, FriendCount, FriendCount2);
+
+             
+
         }
     }
 }

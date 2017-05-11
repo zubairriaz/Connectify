@@ -9,5 +9,6 @@ namespace Connectify.Models.Data
     public class Db:DbContext
     {
         public DbSet<UsersDto> Users { get; set; }
+        public DbSet<FriendsDto> Friends { get; set; }
     }
 }

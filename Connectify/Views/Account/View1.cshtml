@@ -12,25 +12,34 @@
     @if (ViewBag.userType == "guest")
     {
         <div class="friends">
-            @if(ViewBag.Friends == "pending"){
+            @if(ViewBag.Friends == "Pending"){
                 <div class="alert alert-warning arefriendsdiv" >
                     <p>Pending Friends Request</p>
                 </div>
             }
-            else if(ViewBag.Friends =="False"){
-            <div class="arefriendsdiv alert alert-info">
-                <a href="" class="addfriend">Add Friend</a>
-            </div> 
+            else if (ViewBag.Friends == "False")
+            {
+                <div class="arefriendsdiv alert alert-info">
+                    <a href="" class="addfriend">Add Friend</a>
+                </div>
             }
             else
             {
-                <div class="arefriendsdiv alert alert-success">
-                    <span class="glyphicon glyphicon-thumbs-up"></span>Friends
+                <div class="arefriendsdiv alert alert-success col-sm-2">
+                    <span class="glyphicon glyphicon-thumbs-up"></span> Friends
                 </div>
             }
         </div>
     }
+    <div class="row col-md-2">
+        <div class="friends @User.Identity.Name alert alert-info">
+            <span>@ViewBag.FriendCount</span> Friends
+        </div>
+    </div>
+   
 </div>
+
+
 
 @section Scripts {
 <script src="~/Scripts/jquery.signalR-2.0.0.min.js"></script>
@@ -63,11 +72,69 @@
                $("input#search").val("");
 
            });
+           ////////////////////////////////////
+
+           $("body").on("click","span.glyphicon.glyphicon-user.frnoti.red",function () {
+               console.log("hey u what is this ");
+               $("ul#frnotiul").empty();
+             
+               var url = "Profile/DisplayFriendRequests";
+               $.post(url, {} , function (data) {
+                   if (data.length > 0) {
+                       $("ul#frnotiul").append("<li class=close>x</li>");
+
+                   }
+                   for (var i = 0 ; i < data.length ; i++) {
+                       var obj = data[i];
+                       $("ul#frnotiul").append("<li class=frnotili><a href='/" + obj.UserName + "' ><img width='15px' height='20px' src='Images/" + obj.Id + ".jpg'/> " + '' + obj.FirstName + '' + obj.LastName + "</a> "+" <a class='accept' href='#' data-id= '"+obj.Id+"'><span class='glyphicon glyphicon-ok'></span> </a>"+" "+"  <a class='decline' href='#' data-id= '"+obj.Id+"'><span class='glyphicon glyphicon-remove'></span> </a> </li>");
+
+                   }
+                   console.log(data);
+
+               });
+
+           });
+
+           $("body").on("click", "ul#frnotiul li.close", function () {
+               $("ul#frnotiul").empty();
+               
+
+           });
+           ///////////////////////////////
 
            var hub = $.connection.echo;
            hub.client.test = function (msg) {
                console.log(msg);
            }
+           hub.client.frnotify = function (f,count) {
+               $("span.frnoti" ).text(count);
+               $("span.frnoti").addClass("red");
+
+           }
+           hub.client.frcount = function (count) {
+               
+               if (count > 1) {
+                   $("span.frnoti").text(count);
+               } else {
+                   $("span.frnoti").text("");
+                   $("span.frnoti").removeClass("red");
+               }
+               
+
+           }
+           hub.client.fscount = function (u1,u2,c1,c2) {
+               if (c1 > 0) {
+                   $("div.friends." + u1).text(c1 +" friend(s)");
+               } else {
+                   $("div.friends." + u1).text("");
+               }
+               if (c2 > 0) {
+                   $("div.friends." + u2).text(c2 + " friend(s)");
+               } else {
+                   $("div.friends." + u2).text("");
+               }
+           }
+          
            $.connection.hub.start().done(function () {
 
                hub.server.hello("This is signalr");
@@ -78,11 +145,53 @@
                var friend = '@ViewBag.USERNAME';
                var url = '/Profile/AddFriend';
                $.post(url, { friend: friend }, function (data) {
-                   $('arefriendsdiv').removeClass('alert alert-info').addClass('alert alert-warning').html('<p>Pending Friend Request</p>');
+                   $('.arefriendsdiv').removeClass('alert alert-info').addClass('alert alert-warning').html('<p>Pending Friend Request</p>');
                }).done(function () {
                    hub.server.notify(friend);
                });
            });
+
+           $("body").on("click", "a.accept", function (e) {
+               e.preventDefault();
+              
+               var $this = $(this);
+               var friendId = $this.data("id");
+               
+
+               var url = "Profile/AcceptRequest";
+               $.post(url, { fId: friendId }, function (data) {
+
+
+               }).done(function () {
+
+                   $this.parent().fadeOut("fast");
+                   hub.server.getFrCount("hello");
+                   hub.server.getFCount(friendId);
+
+               });
+
+           });
+           $("body").on("click", "a.decline", function (e) {
+               e.preventDefault();
+
+               var $this = $(this);
+               var friendId = $this.data("id");
+
+
+               var url = "Profile/DeclineRequest";
+               $.post(url, { fId: friendId }, function (data) {
+
+
+               }).done(function () {
+
+                   $this.parent().fadeOut("fast");
+                   hub.server.getFrCount("hello");
+                 
+
+               });
+
+           });
+
 
        });
     </script>

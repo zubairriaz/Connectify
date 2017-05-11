@@ -23,7 +23,21 @@
                             <li><input type="text" name="search" id="search" placeholder="Search friends.." style="padding:2px; width:300px;" /> </li>
                             <ul id="livesearch"></ul>
                         </ul>
-                        @Html.ActionLink("Logout", "Logout", "Account", new { @class="navbar-brand"});
+      <li class="navbar-brand"> @if (ViewBag.friendsCount!=null) {
+           <span class="glyphicon glyphicon-user frnoti"><span>@ViewBag.friendsCount</span></span>
+           
+           }
+           else
+           {
+                <span class="glyphicon glyphicon-user frnoti"><span></span></span>
+           }
+          <ul id="frnotiul" ></ul>
+           
+                    </li>
+   
+     <li class="navbar-brand">@ViewBag.FullName</li>                   
+    <li> @Html.ActionLink("Logout", "Logout", "Account", new { @class = "navbar-brand" }); </li>
+     
                     }
                 </ul>
             

@@ -82,11 +82,51 @@ namespace Connectify.Controllers
             ViewBag.Image2 = userView.Id + ".jpg";
 
             string userType = "guest";
-            if (user.Equals(UserName))
+            if (UserName.Equals(User.Identity.Name))
             {
                 userType = "owner";
             }
             ViewBag.userType = userType;
+            if (userType == "guest")
+            {
+                UsersDto u1 = db.Users.Where(x => x.UserName.Equals(userName)).FirstOrDefault();
+                int id1 = u1.Id;
+                UsersDto u2 = db.Users.Where(x => x.UserName.Equals(UserName)).FirstOrDefault();
+                int id2 = u2.Id;
+                FriendsDto f1 = db.Friends.Where(x => x.User1.Equals(id1) && x.User2.Equals(id2)).FirstOrDefault();
+                FriendsDto f2 = db.Friends.Where(x => x.User1.Equals(id2) && x.User2.Equals(id1)).FirstOrDefault();
+                if (f1 == null && f2 == null)
+                {
+                    ViewBag.Friends = "False";
+                }
+                if (f1 != null)
+                {
+                    if (!f1.Active)
+                    {
+                        ViewBag.Friends = "Pending";
+                    }
+                }
+                if (f2 != null)
+                {
+                    if (!f2.Active)
+                    {
+                        ViewBag.Friends = "Pending";
+                    }
+                }
+               
+            }
+            var friendCount = db.Friends.Count(x => x.User2 == user.Id && x.Active == false);
+            ViewBag.count = user.Id;
+            if (friendCount > 0)
+            {
+                ViewBag.friendsCount = Convert.ToInt32(friendCount.ToString());
+            }
+            //View Bag Friend Count
+            UsersDto userf = db.Users.Where(x => x.UserName.Equals(UserName)).FirstOrDefault();
+            int userfId = userf.Id;
+            var FriendCount = db.Friends.Count(x => x.User1 == userfId && x.Active == true || x.User2 == userfId && x.Active == true);
+
+            ViewBag.FriendCount = FriendCount;
 
                  
             return View("View1");
@@ -119,5 +159,8 @@ namespace Connectify.Controllers
             }
 
         }
-	}
+       
+       
+}
+
 }

@@ -141,7 +141,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Data\Db.cs" />
+    <Compile Include="Models\Data\FriendsDto.cs" />
     <Compile Include="Models\Data\UsersDto.cs" />
+    <Compile Include="Models\ViewModels\FriendRequestVM.cs" />
     <Compile Include="Models\ViewModels\LiveSearchVM.cs" />
     <Compile Include="Models\ViewModels\LoginVM.cs" />
     <Compile Include="Models\ViewModels\UsersVM.cs" />
