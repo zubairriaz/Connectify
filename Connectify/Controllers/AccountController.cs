@@ -59,6 +59,14 @@ namespace Connectify.Controllers
                
 
             }
+            Wall wall = new Wall
+            {
+                DateEdited = System.DateTime.Now,
+                Message = "",
+                Id = userId
+            };
+            db.Wall.Add(wall);
+            db.SaveChanges();
             return Redirect("~/"+user.UserName);
         }
         //Get
@@ -127,7 +135,22 @@ namespace Connectify.Controllers
             var FriendCount = db.Friends.Count(x => x.User1 == userfId && x.Active == true || x.User2 == userfId && x.Active == true);
 
             ViewBag.FriendCount = FriendCount;
+            UsersDto userf1 = db.Users.Where(x => x.UserName.Equals(User.Identity.Name)).FirstOrDefault();
+            int userf1Id = userf1.Id;
+            var MessageCount = db.Messages.Count(x => x.To == userf1Id && x.Read == false);
+            ViewBag.MessageCount = MessageCount;
+            Wall wall = new Wall();
+            ViewBag.MessageWall = db.Wall.Where(x => x.Id == userf1Id).Select(x => x.Message).FirstOrDefault();
+            ViewBag.UserId = userfId;
+            List<int> friendIds1 = db.Friends.Where(x => x.User1 == userf1Id && x.Active == true).Select(x => x.User2).ToList();
+            List<int> friendIds2 = db.Friends.Where(x => x.User2 == userf1Id && x.Active == true).Select(x => x.User1).ToList();
+            List<int> friendsAll = friendIds1.Concat(friendIds2).ToList();
+            List<WallVM> WallMessages = db.Wall.Where(x => friendsAll.Contains(x.Id)).ToArray().Select(x => new WallVM(x)).ToList();
+            ViewBag.WallMessages = WallMessages;
 
+
+
+           
                  
             return View("View1");
         }

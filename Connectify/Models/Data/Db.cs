@@ -10,5 +10,7 @@ namespace Connectify.Models.Data
     {
         public DbSet<UsersDto> Users { get; set; }
         public DbSet<FriendsDto> Friends { get; set; }
+        public DbSet<MessageDto> Messages { get; set; }
+        public DbSet<Wall> Wall { get; set; }
     }
 }

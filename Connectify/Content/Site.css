@@ -77,3 +77,65 @@ span.frnoti.red{
     color:red;
     cursor:pointer;
 }
+li.msgnotili img{
+    width:40px;
+    height:40px;
+}
+li.msgnotifli{
+    list-style:none;
+    width:auto;
+    display:inline-block;
+
+}
+ul#msgnotiul{
+    position:absolute;
+    background:rgba(0,0,0,.8);
+    top:55px;
+}
+textarea#msgarea{
+    width:400px;
+    height:100px;
+    border:2px solid blue;
+    padding:10px;
+    bottom:40px;
+}
+a#sendmsg.ta{
+
+ 
+    border:1px solid green;
+    background:green;
+    display:block;
+    padding:10px;
+    width:150px;
+    font-weight:bold;
+    text-align:center;
+    margin-top:10px;
+}
+div.wallsayMsg {
+   margin-top: -300px;
+    margin-left: 200px;
+}
+
+textarea#say{
+     width:400px;
+    height:100px;
+    border:2px solid blue;
+    padding:10px;
+    bottom:40px;
+}
+a#saymsg.ta{
+
+ 
+    border:1px solid green;
+    background:green;
+    display:block;
+    padding:10px;
+    width:150px;
+    font-weight:bold;
+    text-align:center;
+    margin-top:10px;
+}
+div.sendMsgParent{
+   margin-left: -56px;
+    margin-top: 15px
+}

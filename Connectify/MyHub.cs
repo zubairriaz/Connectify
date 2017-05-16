@@ -6,7 +6,7 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System.Diagnostics;
 using Connectify.Models.Data;
-using System;
+
 
 namespace Connectify
 {
@@ -56,5 +56,26 @@ namespace Connectify
              
 
         }
+        public void notifyOfMessages(string friend)
+        {
+            Db db = new Db();
+            UsersDto user = db.Users.Where(x => x.UserName.Equals(friend)).FirstOrDefault();
+            int friendId = user.Id;
+            int mscount = db.Messages.Count(x => x.To == friendId && x.Read == false);
+            var clients = Clients.Others;
+            clients.msgcount(friend, mscount);
+
+        }
+        public void msgnotify()
+        {
+            Db db = new Db();
+            UsersDto user = db.Users.Where(x => x.UserName.Equals(Context.User.Identity.Name)).FirstOrDefault();
+            int friendId = user.Id;
+            int mscount = db.Messages.Count(x => x.To == friendId && x.Read == false);
+            var clients = Clients.Caller;
+            clients.msgcount( mscount);
+
+        }
+
     }
 }

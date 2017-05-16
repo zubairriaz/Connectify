@@ -34,7 +34,20 @@
           <ul id="frnotiul" ></ul>
            
                     </li>
-   
+
+<li class="navbar-brand messageCountli">
+    @if (ViewBag.MessageCount > 0) {
+        <span class="glyphicon glyphicon-comment msgnotif"><span>@ViewBag.MessageCount</span></span>
+
+           }
+           else
+           {
+        <span class="glyphicon glyphicon-comment msgnotif"><span></span></span>
+           }
+    <ul id="msgnotiul"></ul>
+
+</li>
+
      <li class="navbar-brand">@ViewBag.FullName</li>                   
     <li> @Html.ActionLink("Logout", "Logout", "Account", new { @class = "navbar-brand" }); </li>
      

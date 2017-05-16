@@ -4,39 +4,93 @@
 }
 
    <div class="row">
-       
-       <div class="media-body"><img src="/Images/@ViewBag.Image2 " class="img-rounded img-thumbnail" width="240" height="240" id="img-user" /></div>
-       <div class="NameMain">@ViewBag.ViewFullName ( @ViewBag.USERNAME )</div>
-   </div>
-<div>
-    @if (ViewBag.userType == "guest")
+
+       <div class="media-body">
+           <img src="/Images/@ViewBag.Image2 " class="img-rounded img-thumbnail" width="240" height="240" id="img-user" />
+           <div class="NameMain">@ViewBag.ViewFullName ( @ViewBag.USERNAME )</div>
+
+
+           @if (ViewBag.userType == "guest")
+           {
+               <div class="friends">
+                   @if (ViewBag.Friends == "Pending")
+                   {
+                       <div class="alert alert-warning arefriendsdiv">
+                           <p>Pending Friends Request</p>
+                       </div>
+                   }
+                   else if (ViewBag.Friends == "False")
+                   {
+                       <div class="arefriendsdiv alert alert-info">
+                           <a href="" class="addfriend">Add Friend</a>
+                       </div>
+                   }
+                   else
+                   {
+                       <div class="arefriendsdiv alert alert-success col-sm-2">
+                           <span class="glyphicon glyphicon-thumbs-up"></span> Friends
+                       </div>
+                   }
+               </div>
+           }
+           <div class="row col-md-2">
+               <div class="friends @User.Identity.Name alert alert-info">
+                   <span>@ViewBag.FriendCount</span> Friends
+               </div>
+           </div>
+           <div class="col-xs-12 col-md-6 wall wallsayMsg">
+               @if (ViewBag.userType == "owner")
+               {
+                   <h3>Say Something here</h3>
+
+                   if (ViewBag.MessageWall == "")
+                   {
+                       <textarea id="say" placeholder="Say Something"></textarea>
+                   }
+                   else
+                   {
+                       <textarea id="say" placeholder="Say Something">@ViewBag.MessageWall</textarea>
+                   }
+                   <a href="" id="saymsg" class="ta" data-id="@ViewBag.UserId">Say</a>
+                   <div class="sendmsgnotif hide alert alert-success">Message Sent</div>
+
+
+               }
+               @if (ViewBag.userType == "guest")
+               {
+                   if (ViewBag.Friends == null)
+                   {
+                       <div class="sendMsgParent">
+                           <div class="msgTextArea">
+                               <textarea id="msgarea"></textarea>
+
+                           </div>
+                           <a href="" id="sendmsg" class="ta">Send Message</a>
+                           <div class="sendmsgnotif hide alert alert-success">Message Sent</div>
+
+                       </div>
+                   }
+               }
+           </div>
+       </div>
+</div>
+<div class="row friendwallrow">
+    <div class="col-md-12">
+       @if (ViewBag.userType == "owner")
+       { 
+    if (Enumerable.Count(ViewBag.WallMessages) > 0)
     {
-        <div class="friends">
-            @if(ViewBag.Friends == "Pending"){
-                <div class="alert alert-warning arefriendsdiv" >
-                    <p>Pending Friends Request</p>
-                </div>
-            }
-            else if (ViewBag.Friends == "False")
-            {
-                <div class="arefriendsdiv alert alert-info">
-                    <a href="" class="addfriend">Add Friend</a>
-                </div>
-            }
-            else
-            {
-                <div class="arefriendsdiv alert alert-success col-sm-2">
-                    <span class="glyphicon glyphicon-thumbs-up"></span> Friends
-                </div>
-            }
-        </div>
+        <h3>Your Friends are saying</h3>
+        foreach (var item in ViewBag.WallMessages)
+        {
+            <div class="friendwall">
+                <img src="Images/@(item.Id).jpg" width="50px" /> @item.Message
+            </div>
+        }
     }
-    <div class="row col-md-2">
-        <div class="friends @User.Identity.Name alert alert-info">
-            <span>@ViewBag.FriendCount</span> Friends
-        </div>
-    </div>
-   
+       }
+
+</div>
 </div>
 
 
@@ -134,6 +188,13 @@
                    $("div.friends." + u2).text("");
                }
            }
+           hub.client.msgcount = function (friend,c) {
+               if (c > 0) {
+                   $("span.msgnotif").text(c);
+               } else {
+                   $("span.msgnotif").text("");
+               }
+           }
           
            $.connection.hub.start().done(function () {
 
@@ -151,6 +212,48 @@
                });
            });
 
+
+
+           //////////////////////////////////////////
+           $("body").on("click", "span.msgnotif", function () {
+             
+               $("ul#msgnotiul").empty();
+
+               var url = "Profile/DisplayMessages";
+               $.post(url, {}, function (data) {
+                   if (data.length > 0) {
+                       $("ul#msgnotiul").append("<li class=close>x</li>");
+
+                   }
+                   for (var i = 0 ; i < data.length ; i++) {
+                       var obj = data[i];
+                       $("ul#msgnotiul").append('<li class=msgnotili ><a href="/' + obj.FromUserName + '"><img src="Images/' + obj.FromId + '.jpg"/></a> '+obj.Message+' </li>');
+
+                   }
+                   console.log(data);
+
+               }).done(function () {
+                   hub.server.msgnotify();
+               });
+
+           });
+
+           $("body").on("click", "ul#msgnotiul li.close", function () {
+               $("ul#msgnotiul").empty();
+
+
+           });
+
+
+
+
+
+
+
+
+
+
+           ////////////////////////////////////////////
            $("body").on("click", "a.accept", function (e) {
                e.preventDefault();
               
@@ -190,6 +293,46 @@
 
                });
 
+           });
+           ///////////////
+
+           $("body").on("click", "a#sendmsg.ta", function (e) {
+               e.preventDefault();
+
+               var $this = $(this);
+               var friend = '@ViewBag.USERNAME';
+               var message = $("#msgarea").val();
+
+               var url = "Profile/SendMessage";
+               $.post(url, { friend: friend, message:message }, function (data) {
+
+
+               }).done(function () {
+                   hub.server.notifyOfMessages(friend);
+                   $("#msgarea").val("");
+                   $("div.sendmsgnotif").removeClass("hide");
+                   $('div.sendmsgnotif').fadeIn('slow').delay(1000).hide(0);
+                  
+
+                  
+
+
+               });
+
+           });
+
+           //Update Wall
+           $("a#saymsg").on("click", function (e) {
+               e.preventDefault();
+               var $this = $(this);
+               var id = $this.data('id');
+               var message = $this.parent().find("#say").val();
+               var url = "/Profile/UpdateWallMessage"
+               $.post(url, { id: id, message: message }, function (data) {
+
+               }).done(function () {
+                   $this.parent().find("#say").val("");
+               });
            });
 
 

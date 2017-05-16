@@ -83,6 +83,50 @@ namespace Connectify.Controllers
             db.SaveChanges();
 
         }
+        [HttpPost]
+          public void SendMessage(string friend , string message)
+          {
+            Db db = new Db();
+            UsersDto user1 = db.Users.Where(x => x.UserName.Equals(User.Identity.Name)).FirstOrDefault();
+            int fromId = user1.Id;
+
+            UsersDto user2 = db.Users.Where(x => x.UserName.Equals(friend)).FirstOrDefault();
+            int toId = user2.Id;
+
+            MessageDto messagedb = new MessageDto
+            {
+                From = fromId,
+                To = toId,
+                Message = message,
+                Read = false,
+                DateSent = DateTime.Now,
+
+            };
+            db.Messages.Add(messagedb);
+            db.SaveChanges();
+
+          }
+        [HttpPost]
+        public ActionResult DisplayMessages()
+        {
+            Db db = new Db();
+            UsersDto user1 = db.Users.Where(x => x.UserName.Equals(User.Identity.Name)).FirstOrDefault();
+            int userID = user1.Id;
+            List<MessageVM> messages = db.Messages.Where(x => x.To == userID && x.Read == false).ToArray().Select(x => new MessageVM(x)).ToList();
+            db.Messages.Where(x => x.To == userID && x.Read == false).ToList().ForEach(x => x.Read = true);
+            db.SaveChanges();
+            return Json(messages, JsonRequestBehavior.AllowGet);
+        }
+         [HttpPost]
+        public void UpdateWallMessage(int id , string message)
+        {
+            Db db = new Db();
+           Wall wall= db.Wall.Find(id);
+           wall.Message = message;
+           wall.DateEdited = System.DateTime.Now;
+           db.SaveChanges();
+             
+        }
 	}
 
 	}
