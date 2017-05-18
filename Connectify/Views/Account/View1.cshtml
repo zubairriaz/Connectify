@@ -92,6 +92,24 @@
 
 </div>
 </div>
+<div class="chat @User.Identity.Name" >
+<ul> </ul>
+
+</div>
+
+<div class="form-group col-xl-12 tachat">
+    <label style="color: blue; font-style: oblique;font-size: medium" id="label1">Write Your Message Here!</label><br />
+    <textarea class="form-control" rows="4" cols="40" id="message" placeholder="Share what's in your mind..."></textarea>
+    <br />
+    <input type="button" class="btn btn-primary" id="sendmessage" value="Send" />
+    <br />
+    <br />
+    <label style="color: blue;font-style:oblique;font-size:medium" id="label2">Group Chat Conversations History</label>
+    <div class="container chatArea">
+        <input type="hidden" id="displayname" />
+        <ul id="discussion"></ul>
+    </div>
+</div>  
 
 
 
@@ -193,6 +211,25 @@
                    $("span.msgnotif").text(c);
                } else {
                    $("span.msgnotif").text("");
+               }
+           }
+           hub.client.getoninefriends = function (user,data) {
+               var result = JSON.parse(data);
+               for (i = 0; i < result.length; i++) {
+                   var obj = result[i];
+                   $(".chat" + user).append("<li class='cf" + obj.id + "' data-id='" + obj.id + "'> <img src='Images/" + obj.id + ".jpg'/>" + obj.friend + "</li>");
+                   var chatbox = $("div.chatbox").clone();
+                   chatbox.attr("data-id", obj.id);
+                   chatbox.attr("id", "cb" + obj.id);
+                   chatbox.addClass("hidden");
+                   chatbox.find("a.sendchat").attr("data-friend", obj.friend);
+                   chatbox.find("a.sendchat").attr("data-id", obj.id);
+                   chatbox.find("div.chatboxtext").attr("id", "cb" + obj.id);
+
+                   $("#chb" + user).append(chatbox);
+                   $("#chb" + user + "#cb" + obj.id + "h4 >span").html('<img src = "Images/' + obj.id + '.jpg" />');
+                   
+
                }
            }
           
@@ -337,5 +374,28 @@
 
 
        });
+
+
+       $(function () {
+           var chat = $.connection.echo;
+           chat.client.addNewMessageToPage = function (name, message) {
+               $('#discussion').append('<ul style="list-style-type:square"><li><strong style="color:red;font-style:normal;font-size:medium;text-transform:uppercase">' + htmlEncode(name) + '  ' + '<strong style="color:black;font-style:normal;font-size:medium;text-transform:lowercase">said</strong>'
+                   + '</strong>: ' + '<strong style="color:blue;font-style:oblique;font-size:medium">' + htmlEncode(message) + '</strong>' + '</li></ul>');
+           };
+         
+           $('#message').focus();
+           $.connection.hub.start().done(function () {
+               $('#sendmessage').click(function () {
+                   chat.server.send('@User.Identity.Name' , $('#message').val());
+                   $('#message').val('').focus();
+               });
+           });
+       });
+       function htmlEncode(value) {
+           var encodedValue = $('<div />').text(value).html();
+           return encodedValue;
+       }
+
+
     </script>
 }

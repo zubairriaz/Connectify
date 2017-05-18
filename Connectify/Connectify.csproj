@@ -143,12 +143,14 @@
     <Compile Include="Models\Data\Db.cs" />
     <Compile Include="Models\Data\FriendsDto.cs" />
     <Compile Include="Models\Data\MessageDto.cs" />
+    <Compile Include="Models\Data\OnlineDto.cs" />
     <Compile Include="Models\Data\UsersDto.cs" />
     <Compile Include="Models\Data\Wall.cs" />
     <Compile Include="Models\ViewModels\FriendRequestVM.cs" />
     <Compile Include="Models\ViewModels\LiveSearchVM.cs" />
     <Compile Include="Models\ViewModels\LoginVM.cs" />
     <Compile Include="Models\ViewModels\MessageVM.cs" />
+    <Compile Include="Models\ViewModels\OnlineVM.cs" />
     <Compile Include="Models\ViewModels\UsersVM.cs" />
     <Compile Include="Models\ViewModels\WallVM.cs" />
     <Compile Include="MyHub.cs" />

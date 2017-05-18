@@ -6,6 +6,8 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System.Diagnostics;
 using Connectify.Models.Data;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 
 namespace Connectify
@@ -76,6 +78,14 @@ namespace Connectify
             clients.msgcount( mscount);
 
         }
+        public void Send(string name, string message)
+        {
+            Clients.All.addNewMessageToPage(name, message);
+        }
+
+        
+        
+       
 
     }
 }

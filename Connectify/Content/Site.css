@@ -139,3 +139,12 @@ div.sendMsgParent{
    margin-left: -56px;
     margin-top: 15px
 }
+div.chatboxtext{
+    position:absolute;
+    right:3000px;
+}
+
+div.tachat{
+      padding-right: 27px;
+    padding-left: 567px;
+}
